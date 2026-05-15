@@ -1,0 +1,55 @@
+name: get-program
+method: GET
+description: Public program detail by slug, with hosts, schedule and recent media.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  required:
+    - slug
+  properties:
+    slug:
+      type: string
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT
+          jsonb_build_object(
+            'id', p.id,
+            'slug', p.slug,
+            'name', p.name,
+            'description', p.description,
+            'image_url', p.image_url,
+            'color', p.color,
+            'category', p.category,
+            'duration_minutes', p.duration_minutes,
+            'external_url', p.external_url
+          ) AS program,
+          COALESCE((
+            SELECT jsonb_agg(jsonb_build_object('id', h.id, 'name', h.name, 'slug', h.slug, 'photo_url', h.photo_url, 'role', h.role, 'bio', h.bio, 'social_links', h.social_links) ORDER BY h.sort_order)
+            FROM public.program_hosts ph
+            JOIN public.hosts h ON h.id = ph.host_id AND h.is_active = true
+            WHERE ph.program_id = p.id
+          ), '[]'::jsonb) AS hosts,
+          COALESCE((
+            SELECT jsonb_agg(jsonb_build_object('id', ss.id, 'weekday', ss.weekday, 'start_time', ss.start_time, 'end_time', ss.end_time, 'is_live', ss.is_live, 'notes', ss.notes) ORDER BY ss.weekday, ss.start_time)
+            FROM public.schedule_slots ss WHERE ss.program_id = p.id
+          ), '[]'::jsonb) AS schedule,
+          COALESCE((
+            SELECT jsonb_agg(jsonb_build_object('id', mi.id, 'kind', mi.kind, 'title', mi.title, 'url', mi.url, 'thumbnail_url', mi.thumbnail_url, 'duration_seconds', mi.duration_seconds, 'published_at', mi.published_at) ORDER BY mi.published_at DESC)
+            FROM public.media_items mi WHERE mi.program_id = p.id LIMIT 12
+          ), '[]'::jsonb) AS media,
+          COALESCE((
+            SELECT jsonb_agg(jsonb_build_object('id', a.id, 'slug', a.slug, 'title', a.title, 'excerpt', a.excerpt, 'image_url', a.image_url, 'published_at', a.published_at) ORDER BY a.published_at DESC)
+            FROM public.articles a
+            WHERE a.program_id = p.id AND a.status = 'published' AND a.published_at <= now()
+            LIMIT 8
+          ), '[]'::jsonb) AS articles
+        FROM public.programs p
+        WHERE p.slug = ${input.slug} AND p.is_active = true
+        LIMIT 1;

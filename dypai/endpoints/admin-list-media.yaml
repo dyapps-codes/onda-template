@@ -1,0 +1,27 @@
+name: admin-list-media
+method: GET
+description: All media items.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', mi.id, 'kind', mi.kind, 'title', mi.title, 'description', mi.description,
+            'url', mi.url, 'thumbnail_url', mi.thumbnail_url, 'duration_seconds', mi.duration_seconds,
+            'is_featured', mi.is_featured, 'sort_order', mi.sort_order, 'published_at', mi.published_at,
+            'program_id', mi.program_id, 'program_name', p.name, 'host_id', mi.host_id, 'host_name', h.name
+          ) ORDER BY mi.is_featured DESC, mi.published_at DESC
+        ), '[]'::jsonb) AS media
+        FROM public.media_items mi
+        LEFT JOIN public.programs p ON p.id = mi.program_id
+        LEFT JOIN public.hosts h ON h.id = mi.host_id;

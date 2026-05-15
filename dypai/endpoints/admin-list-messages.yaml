@@ -1,0 +1,43 @@
+name: admin-list-messages
+method: GET
+description: Contact form messages, optionally filtered by status.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  properties:
+    status: { type: string }
+    limit: { type: integer, minimum: 1, maximum: 200 }
+    offset: { type: integer, minimum: 0 }
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        WITH params AS (
+          SELECT NULLIF(${input.status}, '') AS status_in,
+                 LEAST(GREATEST(COALESCE(${input.limit}, 50), 1), 200) AS lim,
+                 GREATEST(COALESCE(${input.offset}, 0), 0) AS off
+        ),
+        filtered AS (
+          SELECT m.* FROM public.contact_messages m
+          CROSS JOIN params p
+          WHERE p.status_in IS NULL OR m.status = p.status_in
+        )
+        SELECT
+          COALESCE((SELECT jsonb_agg(jsonb_build_object(
+            'id', f.id, 'name', f.name, 'email', f.email, 'subject', f.subject, 'body', f.body,
+            'status', f.status, 'internal_notes', f.internal_notes, 'replied_at', f.replied_at,
+            'created_at', f.created_at, 'updated_at', f.updated_at
+          ) ORDER BY f.created_at DESC) FROM (
+            SELECT * FROM filtered ORDER BY created_at DESC
+            LIMIT (SELECT lim FROM params) OFFSET (SELECT off FROM params)
+          ) f), '[]'::jsonb) AS messages,
+          (SELECT COUNT(*) FROM filtered) AS total,
+          (SELECT COUNT(*) FROM public.contact_messages WHERE status = 'new') AS new_count;

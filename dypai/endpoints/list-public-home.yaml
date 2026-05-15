@@ -1,0 +1,16 @@
+name: list-public-home
+method: GET
+description: Public homepage payload — settings, today's schedule, featured articles + media, active banner.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties: {}
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query_file: sql/list_public_home.sql

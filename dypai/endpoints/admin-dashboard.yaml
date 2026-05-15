@@ -1,0 +1,47 @@
+name: admin-dashboard
+method: GET
+description: Admin overview metrics + recent activity.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT jsonb_build_object(
+          'programs',         (SELECT COUNT(*) FROM public.programs WHERE is_active = true),
+          'hosts',            (SELECT COUNT(*) FROM public.hosts WHERE is_active = true),
+          'articles_pub',     (SELECT COUNT(*) FROM public.articles WHERE status = 'published'),
+          'articles_draft',   (SELECT COUNT(*) FROM public.articles WHERE status = 'draft'),
+          'media_items',      (SELECT COUNT(*) FROM public.media_items),
+          'messages_new',     (SELECT COUNT(*) FROM public.contact_messages WHERE status = 'new'),
+          'banners_active',   (SELECT COUNT(*) FROM public.banners WHERE is_active = true),
+          'total_views',      COALESCE((SELECT SUM(view_count) FROM public.articles), 0)
+        ) AS metrics,
+        COALESCE((
+          SELECT jsonb_agg(jsonb_build_object(
+            'id', a.id, 'slug', a.slug, 'title', a.title, 'status', a.status,
+            'published_at', a.published_at, 'view_count', a.view_count, 'image_url', a.image_url
+          ) ORDER BY a.updated_at DESC)
+          FROM (SELECT * FROM public.articles ORDER BY updated_at DESC LIMIT 6) a
+        ), '[]'::jsonb) AS recent_articles,
+        COALESCE((
+          SELECT jsonb_agg(jsonb_build_object(
+            'id', m.id, 'name', m.name, 'email', m.email, 'subject', m.subject, 'status', m.status, 'created_at', m.created_at
+          ) ORDER BY m.created_at DESC)
+          FROM (SELECT * FROM public.contact_messages WHERE status IN ('new', 'read') ORDER BY created_at DESC LIMIT 6) m
+        ), '[]'::jsonb) AS recent_messages,
+        COALESCE((
+          SELECT jsonb_agg(jsonb_build_object(
+            'id', ss.id, 'program_name', p.name, 'program_color', p.color,
+            'weekday', ss.weekday, 'start_time', ss.start_time, 'end_time', ss.end_time
+          ) ORDER BY ss.weekday, ss.start_time)
+          FROM public.schedule_slots ss JOIN public.programs p ON p.id = ss.program_id AND p.is_active = true
+          WHERE ss.weekday = (EXTRACT(ISODOW FROM (now() AT TIME ZONE (SELECT timezone FROM public.settings WHERE id = 1)))::int % 7)
+        ), '[]'::jsonb) AS today_schedule;

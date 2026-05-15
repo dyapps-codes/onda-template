@@ -1,0 +1,44 @@
+name: list-programs
+method: GET
+description: Public list of all active programs with assigned hosts.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties: {}
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE((
+          SELECT jsonb_agg(
+            jsonb_build_object(
+              'id', p.id,
+              'slug', p.slug,
+              'name', p.name,
+              'description', p.description,
+              'image_url', p.image_url,
+              'color', p.color,
+              'category', p.category,
+              'duration_minutes', p.duration_minutes,
+              'external_url', p.external_url,
+              'hosts', COALESCE((
+                SELECT jsonb_agg(jsonb_build_object('id', h.id, 'name', h.name, 'slug', h.slug, 'photo_url', h.photo_url, 'role', h.role) ORDER BY h.sort_order)
+                FROM public.program_hosts ph
+                JOIN public.hosts h ON h.id = ph.host_id AND h.is_active = true
+                WHERE ph.program_id = p.id
+              ), '[]'::jsonb),
+              'next_slot', (
+                SELECT jsonb_build_object('weekday', ss.weekday, 'start_time', ss.start_time, 'end_time', ss.end_time)
+                FROM public.schedule_slots ss WHERE ss.program_id = p.id
+                ORDER BY ss.weekday, ss.start_time LIMIT 1
+              )
+            )
+            ORDER BY p.sort_order, p.name
+          )
+          FROM public.programs p WHERE p.is_active = true
+        ), '[]'::jsonb) AS programs;

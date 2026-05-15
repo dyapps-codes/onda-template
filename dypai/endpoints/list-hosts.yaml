@@ -1,0 +1,29 @@
+name: list-hosts
+method: GET
+description: Public list of active hosts (with their assigned programs).
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties: {}
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', h.id, 'slug', h.slug, 'name', h.name, 'role', h.role,
+            'bio', h.bio, 'photo_url', h.photo_url, 'social_links', h.social_links,
+            'programs', COALESCE((
+              SELECT jsonb_agg(jsonb_build_object('id', p.id, 'name', p.name, 'slug', p.slug, 'color', p.color) ORDER BY p.sort_order)
+              FROM public.program_hosts ph JOIN public.programs p ON p.id = ph.program_id AND p.is_active = true
+              WHERE ph.host_id = h.id
+            ), '[]'::jsonb)
+          )
+          ORDER BY h.sort_order, h.name
+        ), '[]'::jsonb) AS hosts
+        FROM public.hosts h WHERE h.is_active = true;

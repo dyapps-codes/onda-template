@@ -1,0 +1,25 @@
+name: admin-list-schedule
+method: GET
+description: Full weekly schedule for the admin (all programs incl. inactive).
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', ss.id, 'program_id', p.id, 'program_name', p.name, 'program_slug', p.slug,
+            'program_color', p.color, 'program_active', p.is_active,
+            'weekday', ss.weekday, 'start_time', ss.start_time, 'end_time', ss.end_time,
+            'is_live', ss.is_live, 'notes', ss.notes
+          ) ORDER BY ss.weekday, ss.start_time
+        ), '[]'::jsonb) AS slots
+        FROM public.schedule_slots ss JOIN public.programs p ON p.id = ss.program_id;

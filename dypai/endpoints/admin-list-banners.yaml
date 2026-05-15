@@ -1,0 +1,21 @@
+name: admin-list-banners
+method: GET
+description: All banners.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(jsonb_build_object(
+          'id', b.id, 'title', b.title, 'message', b.message, 'link_url', b.link_url,
+          'link_label', b.link_label, 'image_url', b.image_url, 'color', b.color,
+          'starts_at', b.starts_at, 'ends_at', b.ends_at, 'is_active', b.is_active, 'sort_order', b.sort_order
+        ) ORDER BY b.sort_order, b.title), '[]'::jsonb) AS banners FROM public.banners b;

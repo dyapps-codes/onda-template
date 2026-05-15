@@ -1,0 +1,30 @@
+name: admin-list-programs
+method: GET
+description: All programs (active + inactive) with hosts and slot counts.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', p.id, 'slug', p.slug, 'name', p.name, 'description', p.description,
+            'image_url', p.image_url, 'color', p.color, 'category', p.category,
+            'duration_minutes', p.duration_minutes, 'external_url', p.external_url,
+            'sort_order', p.sort_order, 'is_active', p.is_active,
+            'hosts', COALESCE((
+              SELECT jsonb_agg(jsonb_build_object('id', h.id, 'name', h.name, 'slug', h.slug, 'photo_url', h.photo_url) ORDER BY h.sort_order)
+              FROM public.program_hosts ph JOIN public.hosts h ON h.id = ph.host_id WHERE ph.program_id = p.id
+            ), '[]'::jsonb),
+            'slots_count', (SELECT COUNT(*) FROM public.schedule_slots WHERE program_id = p.id)
+          )
+          ORDER BY p.sort_order, p.name
+        ), '[]'::jsonb) AS programs FROM public.programs p;

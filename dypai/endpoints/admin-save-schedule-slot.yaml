@@ -1,0 +1,30 @@
+name: admin-save-schedule-slot
+method: POST
+description: Create, update or delete a schedule slot for a program.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  properties:
+    id: { type: string, format: uuid }
+    program_id: { type: string, format: uuid }
+    weekday: { type: integer, minimum: 0, maximum: 6 }
+    start_time: { type: string }
+    end_time: { type: string }
+    is_live: { type: boolean }
+    notes: { type: string }
+    delete: { type: boolean }
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 5000
+      code_file: code/admin_save_schedule_slot.js

@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "dypai": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@dypai-ai/mcp@latest"
+      ],
+      "env": {
+        "DYPAI_TOKEN": "dypai_mcp_3JBVjk034Dtp6nVWoelV3rCAML3sAUz-XHrgHKx6noc"
+      }
+    }
+  }
+}

@@ -1,0 +1,20 @@
+name: admin-list-sponsors
+method: GET
+description: All sponsors (active + inactive).
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(jsonb_build_object(
+          'id', s.id, 'name', s.name, 'logo_url', s.logo_url, 'link_url', s.link_url,
+          'description', s.description, 'sort_order', s.sort_order, 'is_active', s.is_active
+        ) ORDER BY s.sort_order, s.name), '[]'::jsonb) AS sponsors FROM public.sponsors s;

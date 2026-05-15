@@ -1,0 +1,27 @@
+name: admin-list-hosts
+method: GET
+description: All hosts incl. inactive, with their assigned programs.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', h.id, 'slug', h.slug, 'name', h.name, 'role', h.role, 'bio', h.bio,
+            'photo_url', h.photo_url, 'social_links', h.social_links,
+            'sort_order', h.sort_order, 'is_active', h.is_active,
+            'programs', COALESCE((
+              SELECT jsonb_agg(jsonb_build_object('id', p.id, 'name', p.name, 'slug', p.slug, 'color', p.color) ORDER BY p.sort_order)
+              FROM public.program_hosts ph JOIN public.programs p ON p.id = ph.program_id WHERE ph.host_id = h.id
+            ), '[]'::jsonb)
+          ) ORDER BY h.sort_order, h.name
+        ), '[]'::jsonb) AS hosts FROM public.hosts h;

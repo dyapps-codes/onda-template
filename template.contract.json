@@ -1,0 +1,652 @@
+{
+  "contract_version": "1",
+  "version": "1.0.0",
+  "slug": "onda-template",
+  "name": "Onda Media Station",
+  "status": "published",
+  "template_type": "vertical",
+  "maturity": "stable",
+  "quality_score": 0.9,
+  "source": {
+    "kind": "github",
+    "repo": "dyapps-codes/onda-template",
+    "ref": "main",
+    "path": "",
+    "uri": "https://github.com/dyapps-codes/onda-template"
+  },
+  "short_description": "Plantilla completa para radios, podcasts, medios locales y canales de contenido: web publica con directo, programacion, programas, noticias, multimedia, equipo y contacto; admin privado para gestionar parrilla, hosts, articulos, media, banners, sponsors, mensajes y ajustes.",
+  "long_description": "Vertical mixed para emisoras de radio, podcasts, medios locales, newsletters editoriales y canales de contenido. Incluye una experiencia publica con home editorial, reproductor/directo, parrilla semanal, fichas de programas, archivo multimedia, noticias, equipo y formulario de contacto. El area admin permite gestionar programas, horarios, presentadores, articulos, media, banners, sponsors, mensajes recibidos y ajustes de marca. Stack Vite + React 19 + TypeScript + Tailwind 3 + shadcn/ui + react-router-dom. Backend con tablas para settings, programs, hosts, program_hosts, schedule_slots, articles, media_items, sponsors, banners y contact_messages, mas endpoints publicos y privados listos para usar.",
+  "selection": {
+    "categories": [
+      "vertical",
+      "mixed-app",
+      "media",
+      "radio",
+      "podcast",
+      "news",
+      "content-platform"
+    ],
+    "tags": [
+      "radio",
+      "podcast",
+      "emisora",
+      "programacion",
+      "programas",
+      "noticias",
+      "articulos",
+      "multimedia",
+      "hosts",
+      "presentadores",
+      "directo",
+      "streaming",
+      "sponsors",
+      "banners",
+      "contacto",
+      "admin",
+      "react",
+      "vite",
+      "tailwind"
+    ],
+    "aliases": [
+      "radio",
+      "emisora",
+      "podcast",
+      "medio local",
+      "revista digital",
+      "canal de noticias",
+      "canal multimedia",
+      "programacion de radio",
+      "parrilla de radio",
+      "web para podcast",
+      "web de contenidos",
+      "magazine online",
+      "portal editorial",
+      "radio local",
+      "emisora online"
+    ],
+    "first_message_examples": [
+      "Quiero una web para mi radio local con programacion y noticias",
+      "Necesito una pagina para mi podcast con episodios, equipo y contacto",
+      "Hazme una emisora online con directo, parrilla y articulos",
+      "Crea un medio local con noticias, programas y panel para gestionarlo",
+      "Quiero una web para un canal de contenido con multimedia y sponsors",
+      "Necesito una plataforma para presentar mis programas y publicar noticias",
+      "Haz una web para una radio con equipo, horario semanal y formulario",
+      "Quiero gestionar articulos, banners y mensajes de mi emisora"
+    ],
+    "negative_examples": [
+      "Quiero una tienda online con carrito y pagos",
+      "Necesito una app de reservas con agenda de citas",
+      "Una clinica con pacientes e historial medico",
+      "Un gimnasio con membresias y check-ins",
+      "Una barberia con peluqueros y reservas",
+      "Un restaurante con carta QR y comandas"
+    ],
+    "use_case_keywords": {
+      "primary": [
+        "radio",
+        "podcast",
+        "programacion",
+        "programas",
+        "noticias",
+        "multimedia",
+        "directo"
+      ],
+      "natural_language": [
+        "poner la parrilla semanal",
+        "mostrar los programas",
+        "publicar noticias",
+        "escuchar en directo",
+        "equipo de presentadores",
+        "archivo multimedia",
+        "formulario de contacto para oyentes"
+      ],
+      "domains": [
+        "media",
+        "radio",
+        "podcast",
+        "news",
+        "creator-media",
+        "local-community"
+      ],
+      "actions": [
+        "gestionar programas",
+        "crear articulos",
+        "subir multimedia",
+        "editar horarios",
+        "gestionar sponsors",
+        "responder mensajes",
+        "configurar directo"
+      ],
+      "anti": [
+        "ecommerce",
+        "booking",
+        "reservas",
+        "crm",
+        "clinica",
+        "restaurante",
+        "barberia"
+      ]
+    },
+    "industries": [
+      "media",
+      "radio",
+      "podcasting",
+      "local-news",
+      "creator-economy",
+      "community-media"
+    ],
+    "use_cases": [
+      "media-station",
+      "radio-website",
+      "podcast-platform",
+      "news-portal",
+      "content-management",
+      "program-schedule"
+    ],
+    "visual_styles": [
+      "dark-editorial",
+      "broadcast",
+      "energetic",
+      "high-contrast",
+      "media-console"
+    ],
+    "best_for": [
+      "Radios locales, emisoras online y podcasts con varios programas.",
+      "Medios pequenos que necesitan publicar noticias, horarios y multimedia sin montar un CMS pesado.",
+      "Proyectos donde la parte publica y el admin editorial deben salir funcionando desde el primer build.",
+      "Canales que quieren directo, parrilla, presentadores, sponsors y formulario de contacto."
+    ],
+    "not_for": [
+      "Tiendas online, reservas, clinicas, restaurantes o apps de gestion generica.",
+      "Plataformas de streaming con subida pesada de video, CDN propio o monetizacion avanzada por suscripcion.",
+      "Marketplaces multi-creador con cuentas de creador independientes."
+    ]
+  },
+  "agent_decision_signals": {
+    "must_match_one_of": [
+      "radio",
+      "emisora",
+      "podcast",
+      "programacion",
+      "noticias",
+      "multimedia",
+      "medio local",
+      "canal de contenido"
+    ],
+    "must_not_match": [
+      "ecommerce",
+      "reservas",
+      "clinica",
+      "gimnasio",
+      "barberia",
+      "restaurante",
+      "facturacion"
+    ],
+    "ambiguous_signal_action": "Prefer this template when the user asks for a media, radio, podcast, news, magazine, or content-channel site with admin editing.",
+    "fallback_priority": 7
+  },
+  "access_profile": {
+    "app_visibility": "mixed",
+    "auth_scope": "admin_only",
+    "has_public_area": true,
+    "has_admin_area": true,
+    "root_requires_auth": false,
+    "home_path": "/",
+    "admin_path": "/admin",
+    "login_path": "/admin/login",
+    "notes": "Public pages live under /, /programacion, /programas, /noticias, /multimedia, /equipo and /contacto. Admin is protected under /admin/*."
+  },
+  "routes": [
+    {
+      "path": "/",
+      "name": "Home",
+      "visibility": "public",
+      "purpose": "Editorial landing with live stream, today schedule, featured programs, articles and media."
+    },
+    {
+      "path": "/programacion",
+      "name": "Programacion",
+      "visibility": "public",
+      "purpose": "Weekly schedule/parrilla."
+    },
+    {
+      "path": "/programas",
+      "name": "Programas",
+      "visibility": "public",
+      "purpose": "Program listing."
+    },
+    {
+      "path": "/programas/:slug",
+      "name": "Programa",
+      "visibility": "public",
+      "purpose": "Program detail."
+    },
+    {
+      "path": "/noticias",
+      "name": "Noticias",
+      "visibility": "public",
+      "purpose": "Article listing."
+    },
+    {
+      "path": "/noticias/:slug",
+      "name": "Articulo",
+      "visibility": "public",
+      "purpose": "Article detail."
+    },
+    {
+      "path": "/multimedia",
+      "name": "Multimedia",
+      "visibility": "public",
+      "purpose": "Media archive."
+    },
+    {
+      "path": "/equipo",
+      "name": "Equipo",
+      "visibility": "public",
+      "purpose": "Hosts/team page."
+    },
+    {
+      "path": "/contacto",
+      "name": "Contacto",
+      "visibility": "public",
+      "purpose": "Contact form."
+    },
+    {
+      "path": "/admin",
+      "name": "Admin Dashboard",
+      "visibility": "private",
+      "purpose": "Editorial dashboard."
+    },
+    {
+      "path": "/admin/programs",
+      "name": "Admin Programs",
+      "visibility": "private",
+      "purpose": "Manage programs."
+    },
+    {
+      "path": "/admin/schedule",
+      "name": "Admin Schedule",
+      "visibility": "private",
+      "purpose": "Manage weekly schedule."
+    },
+    {
+      "path": "/admin/hosts",
+      "name": "Admin Hosts",
+      "visibility": "private",
+      "purpose": "Manage presenters/hosts."
+    },
+    {
+      "path": "/admin/articles",
+      "name": "Admin Articles",
+      "visibility": "private",
+      "purpose": "Manage articles."
+    },
+    {
+      "path": "/admin/media",
+      "name": "Admin Media",
+      "visibility": "private",
+      "purpose": "Manage media items."
+    },
+    {
+      "path": "/admin/sponsors",
+      "name": "Admin Sponsors",
+      "visibility": "private",
+      "purpose": "Manage sponsors."
+    },
+    {
+      "path": "/admin/banners",
+      "name": "Admin Banners",
+      "visibility": "private",
+      "purpose": "Manage banners and announcements."
+    },
+    {
+      "path": "/admin/messages",
+      "name": "Admin Messages",
+      "visibility": "private",
+      "purpose": "Manage contact messages."
+    },
+    {
+      "path": "/admin/settings",
+      "name": "Admin Settings",
+      "visibility": "private",
+      "purpose": "Manage station settings."
+    }
+  ],
+  "frontend_contract": {
+    "framework": "Vite",
+    "language": "TypeScript",
+    "router": "react-router-dom",
+    "styling": "Tailwind CSS 3 + shadcn/ui",
+    "ui_system": "Radix primitives, lucide-react, sonner, React Query",
+    "files": [
+      "src/App.tsx",
+      "src/pages/Home.tsx",
+      "src/pages/Schedule.tsx",
+      "src/pages/Programs.tsx",
+      "src/pages/Articles.tsx",
+      "src/pages/Contact.tsx",
+      "src/pages/admin/AdminDashboard.tsx",
+      "src/pages/admin/AdminSettings.tsx",
+      "src/lib/dypai.ts",
+      "src/lib/types.ts"
+    ],
+    "entrypoints": [
+      "src/main.tsx",
+      "src/App.tsx"
+    ]
+  },
+  "backend_contract": {
+    "mode": "dypai",
+    "has_dypai_folder": true,
+    "built_in_capabilities": [
+      "public content APIs",
+      "admin editorial APIs",
+      "contact message capture",
+      "media/program schedule management",
+      "settings management"
+    ],
+    "guidance": [
+      "Public endpoints support home, schedule, programs, articles, media, hosts and contact.",
+      "Admin endpoints require authenticated admin users and are used by /admin/* pages.",
+      "Do not rebuild the backend from scratch for media/radio use cases; adapt the existing endpoints and tables."
+    ],
+    "endpoints": [
+      "list-public-home",
+      "list-schedule",
+      "list-programs",
+      "get-program",
+      "list-articles",
+      "get-article",
+      "list-media",
+      "list-hosts",
+      "submit-contact-message",
+      "admin-dashboard",
+      "admin-get-settings",
+      "admin-save-settings",
+      "admin-list-programs",
+      "admin-save-program",
+      "admin-list-schedule",
+      "admin-save-schedule-slot",
+      "admin-list-hosts",
+      "admin-save-host",
+      "admin-list-articles",
+      "admin-save-article",
+      "admin-list-media",
+      "admin-save-media-item",
+      "admin-list-sponsors",
+      "admin-save-sponsor",
+      "admin-list-banners",
+      "admin-save-banner",
+      "admin-list-messages",
+      "admin-update-message"
+    ]
+  },
+  "database_contract": {
+    "mode": "postgres",
+    "schema_path": "dypai/schema.sql",
+    "migrations_path": "dypai/migrations",
+    "tables": [
+      {
+        "name": "settings",
+        "purpose": "Station brand, contact, stream and social settings."
+      },
+      {
+        "name": "programs",
+        "purpose": "Broadcast programs/shows."
+      },
+      {
+        "name": "hosts",
+        "purpose": "Presenters and contributors."
+      },
+      {
+        "name": "program_hosts",
+        "purpose": "Program-host relationship."
+      },
+      {
+        "name": "schedule_slots",
+        "purpose": "Weekly schedule slots."
+      },
+      {
+        "name": "articles",
+        "purpose": "News/editorial articles."
+      },
+      {
+        "name": "media_items",
+        "purpose": "Audio, video, YouTube, Spotify or embed media archive."
+      },
+      {
+        "name": "sponsors",
+        "purpose": "Sponsor logos and links."
+      },
+      {
+        "name": "banners",
+        "purpose": "Promotional banners and announcements."
+      },
+      {
+        "name": "contact_messages",
+        "purpose": "Messages submitted by listeners/readers."
+      }
+    ]
+  },
+  "customization_targets": [
+    {
+      "key": "station_identity",
+      "files": [
+        "src/lib/app-config.ts",
+        "src/components/PublicLayout.tsx",
+        "src/pages/Home.tsx"
+      ],
+      "description": "Station/podcast/news brand name, tagline, live stream, announcement and public nav."
+    },
+    {
+      "key": "public_content",
+      "files": [
+        "src/pages/Home.tsx",
+        "src/pages/Schedule.tsx",
+        "src/pages/Programs.tsx",
+        "src/pages/Articles.tsx",
+        "src/pages/MediaArchive.tsx",
+        "src/pages/Team.tsx"
+      ],
+      "description": "Public editorial surfaces: schedule, programs, articles, media archive and team."
+    },
+    {
+      "key": "contact_flow",
+      "files": [
+        "src/pages/Contact.tsx",
+        "dypai/endpoints/submit-contact-message.yaml"
+      ],
+      "description": "Listener/contact form and public message capture endpoint."
+    },
+    {
+      "key": "admin_editorial",
+      "files": [
+        "src/pages/admin/AdminPrograms.tsx",
+        "src/pages/admin/AdminSchedule.tsx",
+        "src/pages/admin/AdminArticles.tsx",
+        "src/pages/admin/AdminMedia.tsx",
+        "src/pages/admin/AdminSettings.tsx"
+      ],
+      "description": "Protected editorial CMS/admin operations."
+    },
+    {
+      "key": "theme",
+      "files": [
+        "src/index.css"
+      ],
+      "description": "HSL design tokens for broadcast/editorial brand."
+    }
+  ],
+  "default_first_screen": {
+    "page": "src/pages/Home.tsx",
+    "shape": "Full media landing with live/on-air hero, schedule, programs, articles, media and sponsors.",
+    "data_strategy": "Use the baked DYPAI backend seed data, then adapt brand/content to the user's media project.",
+    "interaction": "Public links navigate to real pages; contact submits to submit-contact-message; admin CRUD pages call real endpoints."
+  },
+  "verification_contract": {
+    "commands": [
+      "npm run build"
+    ],
+    "smoke_routes": [
+      "/",
+      "/programacion",
+      "/programas",
+      "/noticias",
+      "/contacto",
+      "/admin"
+    ],
+    "backend_expectations": [
+      "list-public-home returns settings and arrays for schedule/articles/media/programs/sponsors.",
+      "submit-contact-message is public.",
+      "admin endpoints are private/admin-only."
+    ]
+  },
+  "agent_brief": {
+    "already_included": [
+      "Mixed public + admin media station for radio, podcast, articles, programs, schedule, hosts, sponsors, banners and contact messages.",
+      "Public routes for home, schedule, programs, articles, multimedia, team and contact.",
+      "Protected admin editorial dashboard under /admin with programs, schedule, hosts, articles, media, sponsors, banners, messages and settings.",
+      "Backend schema with settings, programs, hosts, schedule_slots, articles, media_items, sponsors, banners and contact_messages.",
+      "Public content endpoints and private admin CRUD endpoints already wired to the frontend."
+    ],
+    "adaptation_steps": [
+      "Adapt station/brand name, tagline, live stream, editorial tone and public navigation in app-config/layout/home.",
+      "Reuse existing content endpoints for public pages and admin CRUD; do not create duplicate article/program/media endpoints.",
+      "Keep /admin protected and /admin/login public.",
+      "Customize program/article/media fields only if the user's media workflow needs it.",
+      "Verify public contact and admin editorial pages compile after changes."
+    ],
+    "do_not_rebuild": [
+      "Do not rebuild the CMS/editorial backend from scratch.",
+      "Do not duplicate content tables or endpoints for programs, articles, media, hosts or messages.",
+      "Do not move admin routes out of /admin or remove the auth boundary.",
+      "Do not turn this into ecommerce/booking; choose another template for those intents."
+    ],
+    "first_build_goal": "A branded public media site with working live/schedule/content surfaces and a protected editorial admin that preserves the existing backend.",
+    "completion_checks": [
+      "Public home, schedule, programs, articles, multimedia, team and contact routes compile.",
+      "Admin editorial pages under /admin compile and remain protected.",
+      "Contact form uses submit-contact-message and remains public.",
+      "The agent reused existing media station tables/endpoints."
+    ]
+  },
+  "backend_reuse_contract": {
+    "existing_tables": [
+      "settings",
+      "programs",
+      "hosts",
+      "program_hosts",
+      "schedule_slots",
+      "articles",
+      "media_items",
+      "sponsors",
+      "banners",
+      "contact_messages"
+    ],
+    "existing_endpoints": [
+      "admin-dashboard",
+      "admin-get-settings",
+      "admin-list-articles",
+      "admin-list-banners",
+      "admin-list-hosts",
+      "admin-list-media",
+      "admin-list-messages",
+      "admin-list-programs",
+      "admin-list-schedule",
+      "admin-list-sponsors",
+      "admin-save-article",
+      "admin-save-banner",
+      "admin-save-host",
+      "admin-save-media-item",
+      "admin-save-program",
+      "admin-save-schedule-slot",
+      "admin-save-settings",
+      "admin-save-sponsor",
+      "admin-update-message",
+      "get-article",
+      "get-program",
+      "list-articles",
+      "list-hosts",
+      "list-media",
+      "list-programs",
+      "list-public-home",
+      "list-schedule",
+      "submit-contact-message"
+    ],
+    "existing_workflows": [
+      "public content listing",
+      "article/program detail",
+      "contact capture",
+      "admin editorial CRUD"
+    ],
+    "platform_capabilities": [
+      "auth",
+      "admin roles",
+      "public endpoints"
+    ],
+    "must_reuse": [
+      "Public content endpoints for home/schedule/programs/articles/media/hosts",
+      "submit-contact-message for listener contact",
+      "admin-* editorial endpoints for protected management",
+      "DYPAI auth and /admin boundary"
+    ],
+    "may_extend": [
+      "Add podcast platform embeds or newsletter endpoints",
+      "Add richer media metadata fields",
+      "Add public pages for sponsors or live events"
+    ],
+    "must_not_duplicate": [
+      "Do not create duplicate article/program/media/host/contact tables",
+      "Do not create duplicate content CRUD endpoints",
+      "Do not create custom auth tables/endpoints"
+    ]
+  },
+  "media_plan": {
+    "should_generate_images": true,
+    "default_image_count": 2,
+    "max_image_count": 5,
+    "image_targets": [
+      "station or podcast hero image",
+      "program thumbnail style",
+      "host portrait/illustration set",
+      "article/media thumbnail treatment",
+      "sponsor/banner visual optional"
+    ],
+    "guidance": "Media brands benefit from strong imagery. Generate a coherent hero plus program/host visual system when the user asks for a branded first build."
+  },
+  "preferred_providers": null,
+  "required_env_vars": [],
+  "required_integrations": [],
+  "dependencies": [
+    "@dypai-ai/client-sdk",
+    "@tanstack/react-query",
+    "react-router-dom",
+    "lucide-react",
+    "sonner",
+    "date-fns",
+    "recharts"
+  ],
+  "agent_instructions": "Use this template when the user asks for a radio, podcast, media outlet, news, magazine or content-channel app. Do not mention the internal template name to the end user. Preserve the mixed surface: public content pages plus protected admin. Reuse existing DYPAI endpoints and tables; adapt copy, branding, colors, content examples and admin labels to the user's project. Public features should use public endpoints; admin management stays protected.",
+  "design_system": {
+    "color_space": "HSL",
+    "theme_file": "src/index.css",
+    "tailwind_version": "3.x",
+    "fonts": {
+      "sans": "Inter (loaded via Google Fonts)",
+      "display": "Inter with 800/900 weights for broadcast/editorial headlines",
+      "mono": "system monospace"
+    },
+    "palette": {
+      "intent": "dark editorial/broadcast base with vivid blue primary",
+      "primary": "214 84% 56%",
+      "accent": "214 95% 88%",
+      "background": "0 0% 100%",
+      "secondary": "220 26% 18%",
+      "text": "224 15% 15%",
+      "light_mode": "default HSL tokens in src/index.css",
+      "dark_mode": "available via .dark class on html"
+    },
+    "guidance": "Keep the public brand energetic and editorial. Retune HSL tokens in src/index.css for the station identity; preserve strong contrast, media cards and admin readability."
+  }
+}

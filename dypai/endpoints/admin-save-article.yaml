@@ -1,0 +1,38 @@
+name: admin-save-article
+method: POST
+description: Create, update or delete an article.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  properties:
+    id: { type: string, format: uuid }
+    title: { type: string }
+    slug: { type: string }
+    excerpt: { type: string }
+    body: { type: string }
+    image_url: { type: string }
+    author_host_id: { type: string, format: uuid }
+    author_name: { type: string }
+    program_id: { type: string, format: uuid }
+    status: { type: string }
+    is_featured: { type: boolean }
+    published_at: { type: string }
+    tags:
+      type: array
+      items: { type: string }
+    delete: { type: boolean }
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 10000
+      code_file: code/admin_save_article.js

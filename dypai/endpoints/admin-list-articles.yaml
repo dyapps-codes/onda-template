@@ -1,0 +1,50 @@
+name: admin-list-articles
+method: GET
+description: All articles (any status) with optional search.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  properties:
+    status: { type: string }
+    search: { type: string }
+    limit: { type: integer, minimum: 1, maximum: 200 }
+    offset: { type: integer, minimum: 0 }
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        WITH params AS (
+          SELECT NULLIF(${input.status}, '') AS status_in,
+                 NULLIF(${input.search}, '') AS search_in,
+                 LEAST(GREATEST(COALESCE(${input.limit}, 50), 1), 200) AS lim,
+                 GREATEST(COALESCE(${input.offset}, 0), 0) AS off
+        ),
+        filtered AS (
+          SELECT a.*, p.name AS program_name, h.name AS host_name
+          FROM public.articles a
+          LEFT JOIN public.programs p ON p.id = a.program_id
+          LEFT JOIN public.hosts h ON h.id = a.author_host_id
+          CROSS JOIN params prm
+          WHERE (prm.status_in IS NULL OR a.status = prm.status_in)
+            AND (prm.search_in IS NULL OR a.title ILIKE '%' || prm.search_in || '%' OR a.slug ILIKE '%' || prm.search_in || '%')
+        )
+        SELECT
+          COALESCE((SELECT jsonb_agg(jsonb_build_object(
+            'id', f.id, 'slug', f.slug, 'title', f.title, 'excerpt', f.excerpt,
+            'image_url', f.image_url, 'status', f.status, 'is_featured', f.is_featured,
+            'published_at', f.published_at, 'view_count', f.view_count, 'tags', f.tags,
+            'program_name', f.program_name, 'author_name', COALESCE(f.author_name, f.host_name),
+            'updated_at', f.updated_at
+          ) ORDER BY f.updated_at DESC) FROM (
+            SELECT * FROM filtered ORDER BY updated_at DESC
+            LIMIT (SELECT lim FROM params) OFFSET (SELECT off FROM params)
+          ) f), '[]'::jsonb) AS articles,
+          (SELECT COUNT(*) FROM filtered) AS total;

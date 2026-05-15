@@ -1,0 +1,23 @@
+name: get-article
+method: GET
+description: Public article detail by slug. Increments view_count.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  required:
+    - slug
+  properties:
+    slug:
+      type: string
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 5000
+      code_file: code/get_article.js

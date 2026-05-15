@@ -1,0 +1,40 @@
+name: list-schedule
+method: GET
+description: Full weekly schedule grouped by weekday.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties: {}
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        SELECT COALESCE(jsonb_agg(
+          jsonb_build_object(
+            'id', ss.id,
+            'program_id', p.id,
+            'program_name', p.name,
+            'program_slug', p.slug,
+            'program_color', p.color,
+            'program_image_url', p.image_url,
+            'category', p.category,
+            'weekday', ss.weekday,
+            'start_time', ss.start_time,
+            'end_time', ss.end_time,
+            'is_live', ss.is_live,
+            'notes', ss.notes,
+            'hosts', COALESCE((
+              SELECT jsonb_agg(jsonb_build_object('name', h.name, 'photo_url', h.photo_url) ORDER BY h.sort_order)
+              FROM public.program_hosts ph JOIN public.hosts h ON h.id = ph.host_id AND h.is_active = true
+              WHERE ph.program_id = p.id
+            ), '[]'::jsonb)
+          )
+          ORDER BY ss.weekday, ss.start_time
+        ), '[]'::jsonb) AS slots
+        FROM public.schedule_slots ss
+        JOIN public.programs p ON p.id = ss.program_id AND p.is_active = true;

@@ -1,0 +1,6 @@
+# DYPAI project configuration — commit this file.
+# It identifies which remote project this dypai/ folder belongs to.
+# Never edit by hand unless you KNOW you're retargeting to a different project.
+project_id: 852fea82-c883-4a77-a89e-072e7e17fff3
+project_name: Onda
+organization: DYPAI DEV

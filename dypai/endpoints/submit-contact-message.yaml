@@ -1,0 +1,32 @@
+name: submit-contact-message
+method: POST
+description: Public contact form submission.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  required:
+    - name
+    - email
+    - body
+  properties:
+    name:
+      type: string
+    email:
+      type: string
+      format: email
+    subject:
+      type: string
+    body:
+      type: string
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 5000
+      code_file: code/submit_contact_message.js

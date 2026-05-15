@@ -1,0 +1,56 @@
+name: list-media
+method: GET
+description: Public list of media items with optional kind/program filter.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties:
+    kind:
+      type: string
+    program_slug:
+      type: string
+    limit:
+      type: integer
+      minimum: 1
+      maximum: 50
+    offset:
+      type: integer
+      minimum: 0
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        WITH params AS (
+          SELECT
+            NULLIF(${input.kind}, '')         AS kind_in,
+            NULLIF(${input.program_slug}, '') AS program_slug_in,
+            LEAST(GREATEST(COALESCE(${input.limit}, 12), 1), 50) AS lim,
+            GREATEST(COALESCE(${input.offset}, 0), 0)            AS off
+        ),
+        filtered AS (
+          SELECT mi.*, p.slug AS program_slug, p.name AS program_name, p.color AS program_color
+          FROM public.media_items mi
+          LEFT JOIN public.programs p ON p.id = mi.program_id
+          CROSS JOIN params prm
+          WHERE (prm.kind_in IS NULL OR mi.kind = prm.kind_in)
+            AND (prm.program_slug_in IS NULL OR p.slug = prm.program_slug_in)
+        )
+        SELECT
+          COALESCE((SELECT jsonb_agg(
+            jsonb_build_object(
+              'id', f.id, 'kind', f.kind, 'title', f.title, 'description', f.description,
+              'url', f.url, 'thumbnail_url', f.thumbnail_url, 'duration_seconds', f.duration_seconds,
+              'program_name', f.program_name, 'program_slug', f.program_slug, 'program_color', f.program_color,
+              'published_at', f.published_at, 'is_featured', f.is_featured
+            ) ORDER BY f.is_featured DESC, f.published_at DESC
+          ) FROM (
+            SELECT * FROM filtered
+            ORDER BY is_featured DESC, published_at DESC
+            LIMIT (SELECT lim FROM params) OFFSET (SELECT off FROM params)
+          ) f), '[]'::jsonb) AS media,
+          (SELECT COUNT(*) FROM filtered) AS total;

@@ -1,0 +1,36 @@
+name: admin-save-settings
+method: POST
+description: Update station settings.
+allowed_roles:
+  - admin
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  properties:
+    station_name: { type: string }
+    tagline: { type: string }
+    contact_email: { type: string, format: email }
+    contact_phone: { type: string }
+    timezone: { type: string }
+    locale: { type: string }
+    media_kind: { type: string }
+    brand_color: { type: string }
+    logo_url: { type: string }
+    hero_image_url: { type: string }
+    live_stream_url: { type: string }
+    live_stream_label: { type: string }
+    announcement: { type: string }
+    social_links: { type: object }
+    notifications_enabled: { type: boolean }
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 5000
+      code_file: code/admin_save_settings.js

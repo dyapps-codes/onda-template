@@ -1,0 +1,71 @@
+name: list-articles
+method: GET
+description: Public list of published articles with optional tag/program filters and pagination.
+trigger:
+  http_api:
+    auth_mode: public
+input:
+  type: object
+  properties:
+    tag:
+      type: string
+    program_slug:
+      type: string
+    limit:
+      type: integer
+      minimum: 1
+      maximum: 50
+    offset:
+      type: integer
+      minimum: 0
+workflow:
+  nodes:
+    - id: db
+      type: dypai_database
+      operation: query
+      return: true
+      query: |
+        WITH params AS (
+          SELECT
+            NULLIF(${input.tag}, '')          AS tag_in,
+            NULLIF(${input.program_slug}, '') AS program_slug_in,
+            LEAST(GREATEST(COALESCE(${input.limit}, 12), 1), 50) AS lim,
+            GREATEST(COALESCE(${input.offset}, 0), 0)            AS off
+        ),
+        filtered AS (
+          SELECT a.*, p.slug AS program_slug, p.name AS program_name, h.name AS host_name
+          FROM public.articles a
+          LEFT JOIN public.programs p ON p.id = a.program_id
+          LEFT JOIN public.hosts h ON h.id = a.author_host_id
+          CROSS JOIN params prm
+          WHERE a.status = 'published' AND a.published_at IS NOT NULL AND a.published_at <= now()
+            AND (prm.tag_in IS NULL OR a.tags ? prm.tag_in)
+            AND (prm.program_slug_in IS NULL OR p.slug = prm.program_slug_in)
+        )
+        SELECT
+          COALESCE((SELECT jsonb_agg(
+            jsonb_build_object(
+              'id', f.id,
+              'slug', f.slug,
+              'title', f.title,
+              'excerpt', f.excerpt,
+              'image_url', f.image_url,
+              'author_name', COALESCE(f.author_name, f.host_name),
+              'program_name', f.program_name,
+              'program_slug', f.program_slug,
+              'tags', f.tags,
+              'published_at', f.published_at,
+              'view_count', f.view_count
+            ) ORDER BY f.is_featured DESC, f.published_at DESC
+          ) FROM (
+            SELECT * FROM filtered
+            ORDER BY is_featured DESC, published_at DESC
+            LIMIT (SELECT lim FROM params)
+            OFFSET (SELECT off FROM params)
+          ) f), '[]'::jsonb) AS articles,
+          (SELECT COUNT(*) FROM filtered) AS total,
+          COALESCE((
+            SELECT jsonb_agg(DISTINCT t)
+            FROM public.articles, jsonb_array_elements_text(tags) t
+            WHERE status = 'published'
+          ), '[]'::jsonb) AS all_tags;

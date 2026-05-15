@@ -1,0 +1,28 @@
+name: admin-update-message
+method: POST
+description: Update contact message status / internal notes.
+allowed_roles:
+  - admin
+  - editor
+trigger:
+  http_api:
+    auth_mode: jwt
+input:
+  type: object
+  required:
+    - id
+  properties:
+    id: { type: string, format: uuid }
+    status: { type: string }
+    internal_notes: { type: string }
+    delete: { type: boolean }
+workflow:
+  nodes:
+    - id: handler
+      type: javascript_code
+      variable: result
+      return: true
+      env_vars: []
+      input_data: {}
+      timeout_ms: 5000
+      code_file: code/admin_update_message.js
